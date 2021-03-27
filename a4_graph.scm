@@ -14,8 +14,6 @@
 
       )
     (define (add-edge x y)
-
-      
       (cond ((and (eq? (checkNodeExists x graph) #t) (eq? (checkNodeExists y graph) #t))  (add-edge-to-node x y graph) (add-edge-to-node y x graph) #t)
             (else #f)
           )
@@ -42,13 +40,35 @@
     (define (remove-node x)
       (display x)
       (display "\n")
+      
         )
     (define (remove-edge x y)
-      (display x)
-      (display y)
-      (display "\n")
+      (cond ((and (eq? (checkNodeExists x graph) #t) (eq? (checkNodeExists y graph) #t))  (remove-edge-to-node x y graph) (remove-edge-to-node y x graph) #t)
+            (else #f)
+          )
         )
-    
+    (define (remove-edge-to-node nodeToRemoveEdgeFrom EdgeToRemove graphToCheck)
+      (cond ((null? graphToCheck) #f)
+            ((eq? (car (car graphToCheck)) nodeToRemoveEdgeFrom)
+             (cond ((eq? (checkIfEdgeInNode EdgeToRemove (car (cdr (car graphToCheck)))) #t) (set! graph (add-modified-node-to-graph (car (car graphToCheck)) (cons (car (car graphToCheck)) (list (remove-edge-from-set-of-edges (car (cdr (car graphToCheck))) EdgeToRemove))) graph)) #t)
+                   (else (#f))))
+            (else (remove-edge-to-node nodeToRemoveEdgeFrom EdgeToRemove (cdr graphToCheck)))
+            )
+      )
+
+   (define (remove-edge-from-set-of-edges set-Of-Edges EdgeToRemove)
+     (cond ((null? set-Of-Edges) '())
+            ((eq? (car set-Of-Edges) EdgeToRemove) (remove-edge-from-set-of-edges (cdr set-Of-Edges) EdgeToRemove))
+            (else (cons (car set-Of-Edges) (remove-edge-from-set-of-edges (cdr set-Of-Edges) EdgeToRemove))
+            ))
+     
+     )
+   (define (checkIfEdgeInNode EdgeToRemove Edges)
+     (cond ((null? Edges) #f)
+            ((eq? (car Edges) EdgeToRemove)#t)
+            (else (checkIfEdgeInNode EdgeToRemove (cdr Edges)))
+            )
+     )
 
     (define (dispatch method)
       (display method)
@@ -61,7 +81,6 @@
     dispatch)
 
 (define G (make-graph))
-(display G)
 ((G 'add-node) 'a)
 ((G 'add-node) 'b)
 ((G 'add-node) 'c)
@@ -70,4 +89,4 @@
 ((G 'add-edge) 'b 'c)
 ((G 'add-node) 'd)
 ((G 'add-edge) 'b 'd)
-;((G 'remove-edge) 'a 'c)
+((G 'remove-edge) 'a 'c)
